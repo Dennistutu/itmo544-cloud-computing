@@ -1,0 +1,3 @@
+# Reflection — Why `.env` Files Are Excluded from Git.
+
+Environment files are excluded from version control because they can contain sensitive or project-specific information. In this lab, my .env file contained values such as the AWS region, AMI ID, key pair name, security group ID, instance type, and instance count. In larger projects, .env files may also contain sensitive credentials such as API keys and passwords, which should not be committed because they can remain in Git history and create security risks.
