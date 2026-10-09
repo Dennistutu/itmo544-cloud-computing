@@ -1,0 +1,7 @@
+.env
+*.pem
+*_instance_id.txt
+user-data-*.sh
+*-lt-data.json
+user-data-*.sh
+*-lt-data.json
