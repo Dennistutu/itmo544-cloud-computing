@@ -1,0 +1,8 @@
+## 6: One paragraph explaining, using your own recovery-time numbers, what dominates the recovery window (health-check timing vs. boot/ npm install time vs. something else).
+
+Answer: Across four chaos tests, recovery took between 80 and 90 seconds (uploader: 84.1s and 89.8s; viewer: 80.0s and 84.0s). The target group’s health checks run every 10 seconds and need 2 successful checks, so they account for only about 20 seconds of that window. The remaining 60–70 seconds is the replacement instance itself: launching, booting, running dnf update, installing Node.js, and running npm install before the app starts. This boot and install time dominates recovery, which is why my uploader run failed a 60-second SLO.
+
+
+## 7: One paragraph explaining what changed in create_app_stack.sh / delete_app_stack.sh between the previous lab and this one — specifically, what replaced the old run-instances call and why.
+
+Answer: In the previous lab, create_app_stack.sh launched the uploader and viewer directly with aws ec2 run-instances. In this lab, that call was replaced by two Auto Scaling Groups that launch instances from the same Launch Templates, placed behind an Application Load Balancer with two target groups and listeners on ports 8080 and 8081. The app security group was also tightened to accept traffic only from the ALB. delete_app_stack.sh now removes the Auto Scaling Groups, load balancer, target groups, and ALB security group before cleaning up the IAM roles and S3 bucket. This change matters because a single run-instances launch cannot heal itself. The Auto Scaling Group automatically replaces a terminated or unhealthy instance, and the load balancer gives users one stable address.
