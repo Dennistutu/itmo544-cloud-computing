@@ -1,0 +1,15 @@
+.env
+*.pem
+*_instance_id.txt
+user-data-*.sh
+*-lt-data.json
+user-data-*.sh
+*-lt-data.json
+stack_outputs.env
+*-policy.json
+__pycache__/
+.venv/
+__pycache__/
+.pytest_cache/
+stack_outputs.json
+stack_outputs.env
