@@ -1,10 +1,9 @@
 """Unit-test fixtures: no real AWS account is ever reachable from here."""
-import dataclasses
-
 import pytest
 from moto import mock_aws
 
 from stack.clients import AwsClients
+from stack.project_config import ProjectSettings
 
 
 @pytest.fixture(autouse=True)
@@ -21,9 +20,9 @@ def no_real_aws_credentials(monkeypatch, tmp_path):
 
 @pytest.fixture
 def fake_aws(tmp_path, monkeypatch, fake_settings):
-    """A fake AWS account holding what earlier labs created: the app security group, a key pair,
-    an AMI, and the Gemini key parameter (with a fake value)."""
-    monkeypatch.chdir(tmp_path)  # output files are written to the current folder
+    """A fake AWS account holding what earlier labs created: the app security group, a key
+    pair, an AMI and the Gemini key parameter (fake value)."""
+    monkeypatch.chdir(tmp_path)          # output files are written to the current folder
     with mock_aws():
         aws = AwsClients.create("us-east-2")
         vpc = aws.ec2.describe_vpcs(Filters=[{"Name": "isDefault", "Values": ["true"]}])["Vpcs"][0]
@@ -36,5 +35,7 @@ def fake_aws(tmp_path, monkeypatch, fake_settings):
         ami = aws.ec2.describe_images()["Images"][0]["ImageId"]
         aws.ssm.put_parameter(Name=fake_settings.gemini_param_name, Type="SecureString",
                               Value="fake-gemini-key-for-tests")
-        settings = dataclasses.replace(fake_settings, app_sg_id=sg, ami_id=ami)
+        values = {**fake_settings.values, "APP_SECURITY_GROUP_ID": sg, "AMI_ID": ami}
+        settings = ProjectSettings(values=values, weather=fake_settings.weather,
+                                   advisor=fake_settings.advisor)
         yield settings, aws

@@ -16,6 +16,8 @@ class AwsClients:
     ssm: object = None
     rds: object = None
     sts: object = None
+    dynamodb: object = None
+    sns: object = None
 
     @classmethod
     def create(cls, region: str) -> "AwsClients":
@@ -29,4 +31,6 @@ class AwsClients:
             ssm=session.client("ssm"),
             rds=session.client("rds"),
             sts=session.client("sts"),
+            dynamodb=session.client("dynamodb"),
+            sns=session.client("sns"),
         )

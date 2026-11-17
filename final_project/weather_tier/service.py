@@ -15,6 +15,7 @@ import json
 import logging
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timezone
 
 from flask import Flask, jsonify, request
@@ -93,8 +94,13 @@ def get_facts(zip_code: str, day: date, sources, cache: FactsCache, now_utc: dat
         return 400, {"error": "date_out_of_range",
                      "message": "Choose a date from today to 6 days ahead (local time at the ZIP)."}
 
-    g_status, grid = sources.nws_grid(props.get("forecastGridData", ""))
-    o_status, om = sources.open_meteo(lat, lon)
+    # The two forecast sources are independent, so ask them at the same time. This keeps
+    # the worst case at three timeouts in a row (ZIP, points, forecasts), not four.
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        grid_job = pool.submit(sources.nws_grid, props.get("forecastGridData", ""))
+        om_job = pool.submit(sources.open_meteo, lat, lon)
+        g_status, grid = grid_job.result()
+        o_status, om = om_job.result()
     grid_props = grid["properties"] if g_status == 200 and grid else None
     om = om if o_status == 200 else None
     if grid_props is None and om is None:

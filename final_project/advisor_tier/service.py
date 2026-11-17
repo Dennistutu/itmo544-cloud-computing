@@ -256,10 +256,14 @@ def main() -> None:   # pragma: no cover - run on the instance by the boot scrip
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     region = os.environ["AWS_REGION"]
-    s = settings_from_env(os.environ)
+    ssm = boto3.client("ssm", region_name=region)
+    # The salt lives in SSM (SecureString), not in user-data. Read once at start-up.
+    salt = ssm.get_parameter(Name=os.environ["SALT_PARAM_NAME"],
+                             WithDecryption=True)["Parameter"]["Value"]
+    s = settings_from_env({**os.environ, "VISITOR_SALT": salt})
     table = boto3.resource("dynamodb", region_name=region).Table(os.environ["ADVISOR_TABLE"])
     deps = Deps(AdvisorStore(table, s["REPORT_SECONDS"]), boto3.client("sns", region_name=region),
-                boto3.client("ssm", region_name=region), s)
+                ssm, s)
     serve(create_app(deps), host="0.0.0.0", port=int(os.environ["APP_PORT"]), threads=8)
 
 

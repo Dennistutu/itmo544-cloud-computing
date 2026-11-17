@@ -31,14 +31,15 @@ def find_target_group(aws: AwsClients, name: str) -> str | None:
         return None
 
 
-def ensure_target_group(aws: AwsClients, settings: Settings, tier: Tier, vpc_id: str) -> str:
+def ensure_target_group(aws: AwsClients, settings: Settings, tier: Tier, vpc_id: str,
+                        health_path: str = "/") -> str:
     arn = find_target_group(aws, tier.tg_name)
     if arn:
         log.info("Target group %s already exists, skipping.", tier.tg_name)
         return arn
     response = aws.elbv2.create_target_group(
         Name=tier.tg_name, Protocol="HTTP", Port=settings.app_port, VpcId=vpc_id,
-        TargetType="instance", **HEALTH_CHECK)
+        TargetType="instance", **{**HEALTH_CHECK, "HealthCheckPath": health_path})
     return response["TargetGroups"][0]["TargetGroupArn"]
 
 
