@@ -1,0 +1,116 @@
+{
+  "status": 200,
+  "url": "https://api.weather.gov/points/46.7685,-92.0865",
+  "body": {
+    "@context": [
+      "https://geojson.org/geojson-ld/geojson-context.jsonld",
+      {
+        "@version": "1.1",
+        "wx": "https://api.weather.gov/ontology#",
+        "s": "https://schema.org/",
+        "geo": "http://www.opengis.net/ont/geosparql#",
+        "unit": "http://codes.wmo.int/common/unit/",
+        "@vocab": "https://api.weather.gov/ontology#",
+        "geometry": {
+          "@id": "s:GeoCoordinates",
+          "@type": "geo:wktLiteral"
+        },
+        "city": "s:addressLocality",
+        "state": "s:addressRegion",
+        "distance": {
+          "@id": "s:Distance",
+          "@type": "s:QuantitativeValue"
+        },
+        "bearing": {
+          "@type": "s:QuantitativeValue"
+        },
+        "value": {
+          "@id": "s:value"
+        },
+        "unitCode": {
+          "@id": "s:unitCode",
+          "@type": "@id"
+        },
+        "forecastOffice": {
+          "@type": "@id"
+        },
+        "forecastGridData": {
+          "@type": "@id"
+        },
+        "publicZone": {
+          "@type": "@id"
+        },
+        "county": {
+          "@type": "@id"
+        }
+      }
+    ],
+    "id": "https://api.weather.gov/points/46.7685,-92.0865",
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -92.0865,
+        46.7685
+      ]
+    },
+    "properties": {
+      "@id": "https://api.weather.gov/points/46.7685,-92.0865",
+      "@type": "wx:Point",
+      "cwa": "DLH",
+      "type": "land",
+      "forecastOffice": "https://api.weather.gov/offices/DLH",
+      "gridId": "DLH",
+      "gridX": 92,
+      "gridY": 68,
+      "forecast": "https://api.weather.gov/gridpoints/DLH/92,68/forecast",
+      "forecastHourly": "https://api.weather.gov/gridpoints/DLH/92,68/forecast/hourly",
+      "forecastGridData": "https://api.weather.gov/gridpoints/DLH/92,68",
+      "observationStations": "https://api.weather.gov/gridpoints/DLH/92,68/stations",
+      "relativeLocation": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -92.1341347,
+            46.7744583
+          ]
+        },
+        "properties": {
+          "city": "Duluth",
+          "state": "MN",
+          "distance": {
+            "unitCode": "wmoUnit:m",
+            "value": 0
+          },
+          "bearing": {
+            "unitCode": "wmoUnit:degree_(angle)",
+            "value": 0
+          }
+        }
+      },
+      "forecastZone": "https://api.weather.gov/zones/forecast/MNZ037",
+      "county": "https://api.weather.gov/zones/county/MNC137",
+      "fireWeatherZone": "https://api.weather.gov/zones/fire/MNZ037",
+      "timeZone": "America/Chicago",
+      "radarStation": "KDLH",
+      "astronomicalData": {
+        "sunrise": "2026-11-16T07:12:48-06:00",
+        "sunset": "2026-11-16T16:33:30-06:00",
+        "transit": "2026-11-16T11:53:09-06:00",
+        "civilTwilightBegin": "2026-11-16T06:39:49-06:00",
+        "civilTwilightEnd": "2026-11-16T17:06:28-06:00",
+        "nauticalTwilightBegin": "2026-11-16T06:02:57-06:00",
+        "nauticalTwilightEnd": "2026-11-16T17:43:21-06:00",
+        "astronomicalTwilightBegin": "2026-11-16T05:27:08-06:00",
+        "astronomicalTwilightEnd": "2026-11-16T18:19:10-06:00"
+      },
+      "nwr": {
+        "transmitter": "KIG64",
+        "sameCode": "027137",
+        "areaBroadcast": "https://api.weather.gov/radio/KIG64/broadcast",
+        "pointBroadcast": "https://api.weather.gov/points/46.7685,-92.0865/radio"
+      }
+    }
+  }
+}

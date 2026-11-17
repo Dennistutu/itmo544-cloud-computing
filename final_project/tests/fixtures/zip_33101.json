@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "url": "https://api.zippopotam.us/us/33101",
+  "body": {
+    "country": "United States",
+    "country abbreviation": "US",
+    "post code": "33101",
+    "places": [
+      {
+        "place name": "Miami",
+        "longitude": "-80.1978",
+        "latitude": "25.7791",
+        "state": "Florida",
+        "state abbreviation": "FL"
+      }
+    ]
+  }
+}

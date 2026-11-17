@@ -1,0 +1,98 @@
+ZIP 00000 -> HTTP 404, body {}
+
+===== 33101  Miami, FL  lat 25.7791 lon -80.1978
+  points: timeZone=America/New_York
+  forecast (text): 14 periods 2026-11-16 .. 2026-11-23
+    keys: ['detailedForecast', 'endTime', 'icon', 'isDaytime', 'name', 'number', 'probabilityOfPrecipitation', 'shortForecast', 'startTime', 'temperature', 'temperatureTrend', 'temperatureUnit', 'windDirection', 'windSpeed']
+    e.g. Tonight: 76F, wind 18 to 24 mph, PoP 32, 'Mostly Cloudy then Scattered Rain Showers'
+  hourly: 156 hours 2026-11-16T20:00 .. 2026-11-23T07:00
+    keys: ['detailedForecast', 'dewpoint', 'endTime', 'icon', 'isDaytime', 'name', 'number', 'probabilityOfPrecipitation', 'relativeHumidity', 'shortForecast', 'startTime', 'temperature', 'temperatureTrend', 'temperatureUnit', 'windDirection', 'windSpeed']
+  griddata:
+    temperature                  uom=wmoUnit:degC           e.g. 25                                       2026-11-16T14:00 .. 2026-11-24T00:00  (83 entries)
+    apparentTemperature          uom=wmoUnit:degC           e.g. 25                                       2026-11-16T14:00 .. 2026-11-24T00:00  (86 entries)
+    relativeHumidity             uom=wmoUnit:percent        e.g. 69                                       2026-11-16T14:00 .. 2026-11-24T00:00  (88 entries)
+    windSpeed                    uom=wmoUnit:km_h-1         e.g. 25.928                                   2026-11-16T14:00 .. 2026-11-23T17:00  (52 entries)
+    windGust                     uom=wmoUnit:km_h-1         e.g. 31.484                                   2026-11-16T14:00 .. 2026-11-23T17:00  (63 entries)
+    visibility                   uom=wmoUnit:m              e.g. 16093.44                                 2026-11-16T14:00 .. 2026-11-18T03:00  (6 entries)
+    probabilityOfPrecipitation   uom=wmoUnit:percent        e.g. 0                                        2026-11-16T14:00 .. 2026-11-24T00:00  (53 entries)
+    quantitativePrecipitation    uom=wmoUnit:mm             e.g. 0                                        2026-11-16T14:00 .. 2026-11-24T00:00  (31 entries)
+    snowfallAmount               uom=wmoUnit:mm             e.g. 0                                        2026-11-16T14:00 .. 2026-11-23T18:00  (30 entries)
+    iceAccumulation              uom=wmoUnit:mm             e.g. 0                                        2026-11-16T14:00 .. 2026-11-23T18:00  (30 entries)
+    skyCover                     uom=wmoUnit:percent        e.g. 29                                       2026-11-16T14:00 .. 2026-11-24T00:00  (91 entries)
+    weather                      uom=-                      e.g. [{'coverage': None, 'weather': None, 'in 2026-11-16T14:00 .. 2026-11-24T00:00  (22 entries)
+    hazards                      uom=-                      e.g. [{'phenomenon': 'RP', 'significance': 'S 2026-11-16T18:00 .. 2026-11-19T00:00  (2 entries)
+    UV-like fields in griddata: NONE
+  open-meteo: tz=America/New_York  2026-11-16T00:00 .. 2026-11-22T23:00 (168 hours)
+    uv_index                   unit=         max=5.65  nulls=0
+    visibility                 unit=ft       max=132217.84  nulls=0
+    relative_humidity_2m       unit=%        max=92  nulls=0
+    temperature_2m             unit=°F       max=84.8  nulls=0
+    wind_speed_10m             unit=mp/h     max=23.1  nulls=0
+    precipitation              unit=inch     max=0.197  nulls=0
+    snowfall                   unit=inch     max=0.0  nulls=0
+    precipitation_probability  unit=%        max=59  nulls=0
+
+===== 55802  Duluth, MN  lat 46.7685 lon -92.0865
+  points: timeZone=America/Chicago
+  forecast (text): 14 periods 2026-11-16 .. 2026-11-23
+    keys: ['detailedForecast', 'endTime', 'icon', 'isDaytime', 'name', 'number', 'probabilityOfPrecipitation', 'shortForecast', 'startTime', 'temperature', 'temperatureTrend', 'temperatureUnit', 'windDirection', 'windSpeed']
+    e.g. Tonight: 43F, wind 10 to 15 mph, PoP 0, 'Mostly Cloudy'
+  hourly: 156 hours 2026-11-16T19:00 .. 2026-11-23T06:00
+    keys: ['detailedForecast', 'dewpoint', 'endTime', 'icon', 'isDaytime', 'name', 'number', 'probabilityOfPrecipitation', 'relativeHumidity', 'shortForecast', 'startTime', 'temperature', 'temperatureTrend', 'temperatureUnit', 'windDirection', 'windSpeed']
+  griddata:
+    temperature                  uom=wmoUnit:degC           e.g. 7.777777777777778                        2026-11-16T17:00 .. 2026-11-24T00:00  (93 entries)
+    apparentTemperature          uom=wmoUnit:degC           e.g. 5                                        2026-11-16T17:00 .. 2026-11-24T00:00  (96 entries)
+    relativeHumidity             uom=wmoUnit:percent        e.g. 60                                       2026-11-16T17:00 .. 2026-11-24T00:00  (99 entries)
+    windSpeed                    uom=wmoUnit:km_h-1         e.g. 18.52                                    2026-11-16T17:00 .. 2026-11-23T17:00  (87 entries)
+    windGust                     uom=wmoUnit:km_h-1         e.g. 27.78                                    2026-11-16T17:00 .. 2026-11-24T00:00  (102 entries)
+    visibility                   uom=wmoUnit:m              e.g. 16093.44                                 2026-11-16T17:00 .. 2026-11-16T23:00  (7 entries)
+    probabilityOfPrecipitation   uom=wmoUnit:percent        e.g. 2                                        2026-11-16T17:00 .. 2026-11-24T00:00  (23 entries)
+    quantitativePrecipitation    uom=wmoUnit:mm             e.g. 0                                        2026-11-16T17:00 .. 2026-11-24T00:00  (31 entries)
+    snowfallAmount               uom=wmoUnit:mm             e.g. 0                                        2026-11-16T17:00 .. 2026-11-23T18:00  (30 entries)
+    iceAccumulation              uom=wmoUnit:mm             e.g. 0                                        2026-11-16T17:00 .. 2026-11-23T18:00  (30 entries)
+    skyCover                     uom=wmoUnit:percent        e.g. 43                                       2026-11-16T17:00 .. 2026-11-24T00:00  (89 entries)
+    weather                      uom=-                      e.g. [{'coverage': None, 'weather': None, 'in 2026-11-16T17:00 .. 2026-11-23T00:00  (7 entries)
+    hazards                      uom=-                      e.g. [{'phenomenon': 'SC', 'significance': 'Y 2026-11-16T17:00 .. 2026-11-17T18:00  (2 entries)
+    UV-like fields in griddata: NONE
+  open-meteo: tz=America/Chicago  2026-11-16T00:00 .. 2026-11-22T23:00 (168 hours)
+    uv_index                   unit=         max=2.2  nulls=0
+    visibility                 unit=ft       max=158792.656  nulls=0
+    relative_humidity_2m       unit=%        max=97  nulls=0
+    temperature_2m             unit=°F       max=57.9  nulls=0
+    wind_speed_10m             unit=mp/h     max=19.4  nulls=0
+    precipitation              unit=inch     max=0.047  nulls=0
+    snowfall                   unit=inch     max=0.0  nulls=0
+    precipitation_probability  unit=%        max=73  nulls=0
+
+===== 60616  Chicago, IL  lat 41.8426 lon -87.6306
+  points: timeZone=America/Chicago
+  forecast (text): 14 periods 2026-11-16 .. 2026-11-23
+    keys: ['detailedForecast', 'endTime', 'icon', 'isDaytime', 'name', 'number', 'probabilityOfPrecipitation', 'shortForecast', 'startTime', 'temperature', 'temperatureTrend', 'temperatureUnit', 'windDirection', 'windSpeed']
+    e.g. Tonight: 36F, wind 5 mph, PoP 0, 'Mostly Clear'
+  hourly: 156 hours 2026-11-16T19:00 .. 2026-11-23T06:00
+    keys: ['detailedForecast', 'dewpoint', 'endTime', 'icon', 'isDaytime', 'name', 'number', 'probabilityOfPrecipitation', 'relativeHumidity', 'shortForecast', 'startTime', 'temperature', 'temperatureTrend', 'temperatureUnit', 'windDirection', 'windSpeed']
+  griddata:
+    temperature                  uom=wmoUnit:degC           e.g. 10                                       2026-11-16T18:00 .. 2026-11-24T00:00  (134 entries)
+    apparentTemperature          uom=wmoUnit:degC           e.g. 7.777777777777778                        2026-11-16T18:00 .. 2026-11-24T00:00  (137 entries)
+    relativeHumidity             uom=wmoUnit:percent        e.g. 54                                       2026-11-16T18:00 .. 2026-11-24T00:00  (150 entries)
+    windSpeed                    uom=wmoUnit:km_h-1         e.g. 14.816                                   2026-11-16T18:00 .. 2026-11-24T00:00  (45 entries)
+    windGust                     uom=wmoUnit:km_h-1         e.g. 18.52                                    2026-11-16T18:00 .. 2026-11-23T23:00  (82 entries)
+    visibility                   uom=-                      e.g. None                                     no values
+    probabilityOfPrecipitation   uom=wmoUnit:percent        e.g. 0                                        2026-11-16T18:00 .. 2026-11-24T00:00  (14 entries)
+    quantitativePrecipitation    uom=wmoUnit:mm             e.g. 0                                        2026-11-16T18:00 .. 2026-11-19T18:00  (13 entries)
+    snowfallAmount               uom=wmoUnit:mm             e.g. 0                                        2026-11-16T18:00 .. 2026-11-19T18:00  (13 entries)
+    iceAccumulation              uom=wmoUnit:mm             e.g. 0                                        2026-11-16T18:00 .. 2026-11-19T18:00  (13 entries)
+    skyCover                     uom=wmoUnit:percent        e.g. 8                                        2026-11-16T18:00 .. 2026-11-24T00:00  (78 entries)
+    weather                      uom=-                      e.g. [{'coverage': None, 'weather': None, 'in 2026-11-16T18:00 .. 2026-11-22T12:00  (5 entries)
+    hazards                      uom=-                      e.g. None                                     no values
+    UV-like fields in griddata: NONE
+  open-meteo: tz=America/Chicago  2026-11-16T00:00 .. 2026-11-22T23:00 (168 hours)
+    uv_index                   unit=         max=2.9  nulls=0
+    visibility                 unit=ft       max=206364.832  nulls=0
+    relative_humidity_2m       unit=%        max=96  nulls=0
+    temperature_2m             unit=°F       max=63.9  nulls=0
+    wind_speed_10m             unit=mp/h     max=14.2  nulls=0
+    precipitation              unit=inch     max=0.012  nulls=0
+    snowfall                   unit=inch     max=0.0  nulls=0
+    precipitation_probability  unit=%        max=33  nulls=0
+

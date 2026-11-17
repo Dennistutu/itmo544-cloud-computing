@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "url": "https://api.zippopotam.us/us/55802",
+  "body": {
+    "country": "United States",
+    "country abbreviation": "US",
+    "post code": "55802",
+    "places": [
+      {
+        "place name": "Duluth",
+        "longitude": "-92.0865",
+        "latitude": "46.7685",
+        "state": "Minnesota",
+        "state abbreviation": "MN"
+      }
+    ]
+  }
+}
