@@ -1,0 +1,18 @@
+{
+  "itmo-444-544-weather-role dynamodb:GetItem table/itmo-544-final-facts": "allowed",
+  "itmo-444-544-weather-role dynamodb:PutItem table/itmo-544-final-facts": "allowed",
+  "itmo-444-544-weather-role dynamodb:DeleteTable table/itmo-544-final-facts": "implicitDeny",
+  "itmo-444-544-weather-role dynamodb:Scan table/itmo-544-final-facts": "implicitDeny",
+  "itmo-444-544-weather-role dynamodb:GetItem table/itmo-544-final-advisor": "implicitDeny",
+  "itmo-444-544-weather-role ssm:GetParameter parameter/itmo-444-544/gemini-api-key": "implicitDeny",
+  "itmo-444-544-weather-role sns:Publish itmo-544-final-reports": "implicitDeny",
+  "itmo-444-544-advisor-role dynamodb:UpdateItem table/itmo-544-final-advisor": "allowed",
+  "itmo-444-544-advisor-role ssm:GetParameter parameter/itmo-444-544/gemini-api-key": "allowed",
+  "itmo-444-544-advisor-role sns:Publish itmo-544-final-reports": "allowed",
+  "itmo-444-544-advisor-role sns:Subscribe itmo-544-final-reports": "allowed",
+  "itmo-444-544-advisor-role sns:Publish someone-elses-topic": "implicitDeny",
+  "itmo-444-544-advisor-role sns:DeleteTopic itmo-544-final-reports": "implicitDeny",
+  "itmo-444-544-advisor-role dynamodb:GetItem table/itmo-544-final-facts": "implicitDeny",
+  "itmo-444-544-advisor-role dynamodb:Scan table/itmo-544-final-advisor": "implicitDeny",
+  "itmo-444-544-advisor-role ssm:PutParameter parameter/itmo-444-544/gemini-api-key": "implicitDeny"
+}

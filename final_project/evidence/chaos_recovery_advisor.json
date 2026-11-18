@@ -1,0 +1,6 @@
+{
+  "terminated": "i-0a14f57d0daf3dd6d",
+  "recovery_seconds": 164,
+  "first_failed_probe_s": 10.201923370361328,
+  "slo_seconds": 180
+}

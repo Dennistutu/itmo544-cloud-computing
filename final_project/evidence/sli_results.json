@@ -1,0 +1,52 @@
+[
+  {
+    "sli": "weather /health",
+    "n": 50,
+    "p50_ms": 34.9,
+    "p95_ms": 41.8,
+    "max_ms": 46.8,
+    "slo_ms": 120,
+    "within_slo_pct": 100.0,
+    "pass": true
+  },
+  {
+    "sli": "advisor /health",
+    "n": 50,
+    "p50_ms": 33.1,
+    "p95_ms": 46.5,
+    "max_ms": 49.9,
+    "slo_ms": 120,
+    "within_slo_pct": 100.0,
+    "pass": true
+  },
+  {
+    "sli": "saved report (cache)",
+    "n": 20,
+    "p50_ms": 51.9,
+    "p95_ms": 105.3,
+    "max_ms": 105.3,
+    "slo_ms": 120,
+    "within_slo_pct": 100.0,
+    "pass": true
+  },
+  {
+    "sli": "saved report (cache)",
+    "n": 20,
+    "p50_ms": 51.9,
+    "p95_ms": 105.3,
+    "max_ms": 105.3,
+    "slo_ms": 3000,
+    "within_slo_pct": 100.0,
+    "pass": true
+  },
+  {
+    "sli": "new report (NWS + Open-Meteo + Gemini)",
+    "n": 5,
+    "p50_ms": 2685.7,
+    "p95_ms": 3518.1,
+    "max_ms": 3518.1,
+    "slo_ms": 20000,
+    "within_slo_pct": 100.0,
+    "pass": true
+  }
+]
