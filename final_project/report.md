@@ -320,16 +320,21 @@ An SLI is a measured value (here, response time per request type); an SLO is the
 
 Sources are switched off by writing a short-lived item (`chaos#sources`, 5-minute TTL) into the facts table. Only the operator's account can write it; visitors cannot. Recovery is dominated by the new instance installing Python 3.11 and the libraries at boot, as in my week 7 lab where install time dominated. Nothing is lost on instance loss because no state lives on the instances.
 
-### 5.5 Manual evidence from the first live deploy (2026-11-17)
+### 5.5 Manual evidence from the live deploys
 
 | Screenshot | Shows |
 |---|---|
+| `00-setup.png` | `final_project` created from the week 9 baseline, venv rebuilt, SNS permission added |
 | `02-create-stack.png` | `create_stack.py` building all seven stages; role permissions printed |
-| `03-targets-healthy.png` | Both target groups healthy (Python boot script worked) |
-| `04-report.png` | Chicago 60616 report: all ten rows, Morning and Night, sources, Gemini advice |
-| `05a-email-pending.png`, `05b-email-sent.png`, `05c-email-received.png` | Consent pending → confirmed → "sent" → report in Gmail |
-| `06a-non-us-refused.png` | `M5V 3L9` refused in the browser and by `curl` straight to the server |
-| `06b-zip-not-found.png` | `00000` → "ZIP code not found" |
+| `03-targets-healthy.png` | Both target groups healthy (Python boot script worked) — captured at the dress rehearsal |
+| `04a-form.png` | The form with the privacy note (what is sent to Google) |
+| `04b-report.png`, `04c-report.png` | Chicago 60616 report: all ten rows, Morning and Night, sources, Gemini advice, email button |
+| `05a-email-pending.png` | "Email: waiting for confirmation" before consent — captured at the dress rehearsal |
+| `05b-email-sent.png` | "Email: sent" after the address confirmed |
+| `05c-email-received.png`, `05d-email-received.png` | The report received in Gmail from AWS Notifications (first-deploy layout, before the one-line-per-period fix) |
+| `06a-non-us-refused.png` | `M5V 3` refused in the browser: "This service covers US locations only" |
+| `06b-non-us-refused-curl.png` | Full `M5V 3L9` sent straight to the server with `curl`, bypassing the browser: refused |
+| `06c-zip-not-found.png` | `00000` → "ZIP code not found" |
 | `07-delete-stack.png` | Everything deleted except the Gemini key |
 
 Found on the first deploy and fixed: (1) the 300 s deregistration delay made teardown slow → 30 s; (2) the email table did not line up in Gmail's proportional font → one line per period; (3) the ZIP box's 5-character limit hid the full foreign code from the server → 10 characters; (4) per-IP limits would block a whole class behind one campus IP → per-recipient email limit; (5) deleting ASGs one after another doubled teardown time → both deleted together.
