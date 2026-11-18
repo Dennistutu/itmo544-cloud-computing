@@ -53,3 +53,25 @@ def delete_asg(aws: AwsClients, name: str, timeout: int = 600, poll: int = 15,
         sleep(poll)
         waited += poll
     log.info("Deleted Auto Scaling Group %s", name)
+
+
+def delete_asgs(aws: AwsClients, names: list[str], timeout: int = 600, poll: int = 15,
+                sleep=time.sleep) -> None:
+    """Start deleting every group at once, then wait for all of them. Instance
+    termination takes minutes, so waiting for each group in turn doubled teardown time."""
+    pending = [n for n in names if find_asg(aws, n)]
+    for name in pending:
+        aws.autoscaling.delete_auto_scaling_group(AutoScalingGroupName=name, ForceDelete=True)
+    waited = 0
+    while pending:
+        still = [n for n in pending if find_asg(aws, n)]
+        for name in set(pending) - set(still):
+            log.info("Deleted Auto Scaling Group %s", name)
+        pending = still
+        if not pending:
+            return
+        if waited >= timeout:
+            log.warning("%s still deleting after %ss. Check the console.", ", ".join(pending), timeout)
+            return
+        sleep(poll)
+        waited += poll

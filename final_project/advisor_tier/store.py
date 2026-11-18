@@ -73,6 +73,18 @@ class AdvisorStore:
         now = now or time.time()
         return self._increment_below(f"gemini#{day_utc}", cap, int(now + 2 * 86400))
 
+    def count_failure(self, day_utc: str, now: float | None = None) -> None:
+        """Count one Gemini failure for the day (Section 9: "count the failure")."""
+        now = now or time.time()
+        try:
+            self.table.update_item(
+                Key={"pk": f"gemini_fail#{day_utc}"},
+                UpdateExpression="ADD #c :one SET expires_at = if_not_exists(expires_at, :exp)",
+                ExpressionAttributeNames={"#c": "count"},
+                ExpressionAttributeValues={":one": 1, ":exp": int(now + 2 * 86400)})
+        except ClientError:
+            pass
+
     def gemini_count(self, day_utc: str) -> int:
         item = self.table.get_item(Key={"pk": f"gemini#{day_utc}"}).get("Item") or {}
         return int(item.get("count", 0))

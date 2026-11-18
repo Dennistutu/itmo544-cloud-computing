@@ -101,14 +101,17 @@ class Deps:
 
 def get_advice(deps: Deps, facts: dict, clothing: str) -> tuple[dict, str]:
     """(advice for both periods, source label). Falls back to rules on any problem."""
+    today = deps.clock().strftime("%Y-%m-%d")
+
     def fallback(reason):
         log_event("gemini_fallback", reason=reason)
+        if reason != "cap":             # the cap is a limit we chose, not a failure
+            deps.store.count_failure(today)
         return ({p: A.fallback_advice(facts, p, clothing) for p in A.PERIOD_NAMES},
                 "Rule-based advice (Gemini not used: " + {
                     "cap": "daily limit reached", "quota": "Gemini quota reached",
                     "rejected": "answer failed our checks"}.get(reason, "Gemini unavailable") + ")")
 
-    today = deps.clock().strftime("%Y-%m-%d")
     if not deps.store.take_gemini_call(today, deps.s["GEMINI_DAILY_CAP"]):
         return fallback("cap")
     try:

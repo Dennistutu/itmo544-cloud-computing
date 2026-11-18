@@ -199,8 +199,7 @@ def delete_stack(s: ProjectSettings, aws: AwsClients, sleep=time.sleep) -> dict[
     Returns the Gemini calls per day, read before the advisor table is deleted."""
     gemini = data_stores.gemini_counts(aws, s.advisor_table)
     log.info("== Auto Scaling Groups (terminates the instances) ==")
-    for tier in s.tiers:
-        scaling.delete_asg(aws, tier.asg_name, sleep=sleep)
+    scaling.delete_asgs(aws, [t.asg_name for t in s.tiers], sleep=sleep)
 
     log.info("== Load balancer and target groups ==")
     balancer.delete_load_balancer(aws, s.alb_name)

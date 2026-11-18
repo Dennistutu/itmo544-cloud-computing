@@ -291,3 +291,10 @@ def test_email_text_is_one_line_per_period():
     text = report_text({"facts": f, "rows": build_rows(f), "advice": adv, "advice_source": "x"})
     assert "TEMPERATURE\n  Morning: " in text and "\n  Night:   " in text
     assert "SUGGESTED DRESSING" in text and "alice" not in text.lower()
+
+
+def test_gemini_failures_are_counted_but_cap_is_not(env):
+    env["deps"].gemini_call = lambda *a: (None, "quota")
+    env["client"].post("/report", data=FORM)
+    item = env["table"].get_item(Key={"pk": "gemini_fail#2026-11-17"}).get("Item")
+    assert item and int(item["count"]) == 1
