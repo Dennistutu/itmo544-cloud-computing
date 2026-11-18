@@ -156,6 +156,9 @@ def test_health_checks_use_health_route(built):
     _, aws, _ = built
     for tg in aws.elbv2.describe_target_groups()["TargetGroups"]:
         assert tg["HealthCheckPath"] == "/health"
+        attrs = {a["Key"]: a["Value"] for a in aws.elbv2.describe_target_group_attributes(
+            TargetGroupArn=tg["TargetGroupArn"])["Attributes"]}
+        assert attrs["deregistration_delay.timeout_seconds"] == "30"
 
 
 def test_instances_require_imdsv2(built):
@@ -195,7 +198,9 @@ def test_create_twice_creates_no_duplicates(built):
 def test_delete_removes_everything_but_the_key_and_is_safe_twice(built):
     settings, aws, outputs = built
     aws.sns.subscribe(TopicArn=outputs.topic_arn, Protocol="email", Endpoint="a@example.com")
-    delete_stack(settings, aws, sleep=lambda _: None)
+    aws.dynamodb.put_item(TableName=settings.advisor_table,
+                          Item={"pk": {"S": "gemini#2026-11-17"}, "count": {"N": "7"}})
+    assert delete_stack(settings, aws, sleep=lambda _: None) == {"2026-11-17": 7}
     delete_stack(settings, aws, sleep=lambda _: None)
 
     assert aws.elbv2.describe_load_balancers()["LoadBalancers"] == []

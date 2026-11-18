@@ -16,8 +16,9 @@ def main() -> None:
 
     setup_logging()
     settings = ProjectSettings.from_file(args.env)
-    delete_stack(settings, AwsClients.create(settings.region))
-    record_stop()
+    gemini = delete_stack(settings, AwsClients.create(settings.region))
+    record_stop(gemini=gemini)
+    print(f"Gemini calls in this session: {sum(gemini.values())}. Run python budget.py for the cost report.")
 
 
 if __name__ == "__main__":

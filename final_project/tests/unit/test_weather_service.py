@@ -143,3 +143,35 @@ def test_facts_cache_with_dynamodb_ttl():
     cache.put("60616#2026-11-18", {"a": 1}, 1000.0)
     assert cache.get("60616#2026-11-18", 1100.0) == ({"a": 1}, 100.0)
     assert cache.get("60616#2026-11-18", 1000.0 + 3600) == (None, None)   # expired
+
+
+def test_fault_flag_switches_a_source_off(setup):
+    client, sources, table, _ = setup
+    table.put_item(Item={"pk": "chaos#sources", "down": ["open_meteo"],
+                         "expires_at": int(NOW.timestamp()) + 300})
+    r = client.get("/facts", query_string={"zip": "60616", "date": "2026-11-18"})
+    assert r.status_code == 200 and r.json["degraded"] is True
+    assert r.json["periods"]["morning"]["items"]["uv"]["value"] is None
+    assert "om" not in sources.calls                      # never even attempted
+
+
+def test_expired_fault_flag_is_ignored(setup):
+    client, sources, table, _ = setup
+    table.put_item(Item={"pk": "chaos#sources", "down": ["open_meteo"],
+                         "expires_at": int(NOW.timestamp()) - 1})
+    r = client.get("/facts", query_string={"zip": "60616", "date": "2026-11-18"})
+    assert r.json["degraded"] is False
+
+
+def test_unknown_fault_names_are_ignored(setup):
+    client, _, table, _ = setup
+    table.put_item(Item={"pk": "chaos#sources", "down": ["everything"],
+                         "expires_at": int(NOW.timestamp()) + 300})
+    assert client.get("/facts", query_string={"zip": "60616", "date": "2026-11-18"}).status_code == 200
+
+
+def test_degraded_result_is_not_cached(setup):
+    client, sources, table, _ = setup
+    sources.down = {"om"}
+    client.get("/facts", query_string={"zip": "60616", "date": "2026-11-18"})
+    assert "60616#2026-11-18" not in table.items

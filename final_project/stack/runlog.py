@@ -20,10 +20,12 @@ def record_start(at: float | None = None, path: Path = RUNLOG) -> None:
     path.write_text(json.dumps(runs, indent=2) + "\n")
 
 
-def record_stop(at: float | None = None, path: Path = RUNLOG) -> None:
+def record_stop(at: float | None = None, gemini: dict | None = None,
+                path: Path = RUNLOG) -> None:
     runs = _read(path)
     if runs and runs[-1].get("stop") is None:
         runs[-1]["stop"] = at or time.time()
+        runs[-1]["gemini_calls"] = gemini or {}
         path.write_text(json.dumps(runs, indent=2) + "\n")
 
 
@@ -31,3 +33,7 @@ def hours_run(now: float | None = None, path: Path = RUNLOG) -> float:
     """Total hours the stack has existed, counting a still-running stack up to now."""
     now = now or time.time()
     return sum(((r["stop"] or now) - r["start"]) for r in _read(path)) / 3600
+
+
+def runs(path: Path = RUNLOG) -> list[dict]:
+    return _read(path)

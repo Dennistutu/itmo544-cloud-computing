@@ -67,7 +67,7 @@ def env():
         ssm.put_parameter(Name="/t/gemini", Type="SecureString", Value="test-key")
         settings = {"WEATHER_URL": "http://weather", "GEMINI_MODEL": "m", "GEMINI_PARAM_NAME": "/t/gemini",
                     "SNS_TOPIC_ARN": topic, "VISITOR_SALT": "salt", "GEMINI_DAILY_CAP": 5,
-                    "REPORT_LIMIT": 20, "REPORT_WINDOW_SECONDS": 600, "EMAIL_LIMIT": 3,
+                    "REPORT_LIMIT": 20, "REPORT_WINDOW_SECONDS": 600, "EMAIL_LIMIT": 3, "EMAIL_IP_LIMIT": 30,
                     "EMAIL_WINDOW_SECONDS": 3600, "KEY_CACHE_SECONDS": 60, "REPORT_SECONDS": 1800,
                     "WEATHER_TIMEOUT_SECONDS": 20.0, "GEMINI_TIMEOUT_SECONDS": 12.0}
         calls = []
@@ -263,3 +263,31 @@ def test_daily_cap_holds_when_requests_race():
     [t.start() for t in threads]
     [t.join() for t in threads]
     assert results.count(True) == 5 and store.gemini_count("2026-11-17") == 5
+
+
+def test_email_limit_is_per_recipient_not_per_campus_ip(env):
+    """Many classmates behind one campus IP can each email their own report."""
+    env["client"].post("/report", data=FORM)
+    key = "report#60616#2026-11-18#neutral"
+    for i in range(6):                                   # 6 different people, same IP
+        r = env["client"].post("/email", data={"email": f"student{i}@example.com", "report_key": key})
+        assert r.status_code != 429
+
+
+def test_degraded_facts_are_shown_but_not_saved(env):
+    body = facts_doc()
+    body["degraded"] = True
+    env["http"].body = body
+    env["client"].post("/report", data=FORM)
+    env["client"].post("/report", data=FORM)
+    assert env["http"].calls == 2                        # not served from the saved copy
+
+
+def test_email_text_is_one_line_per_period():
+    from advisor_tier.emailer import report_text
+    from advisor_tier.service import build_rows
+    f = facts_doc()
+    adv = {p: {"road": "r", "dressing": "d", "accessories": "a"} for p in ("morning", "night")}
+    text = report_text({"facts": f, "rows": build_rows(f), "advice": adv, "advice_source": "x"})
+    assert "TEMPERATURE\n  Morning: " in text and "\n  Night:   " in text
+    assert "SUGGESTED DRESSING" in text and "alice" not in text.lower()

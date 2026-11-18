@@ -23,6 +23,8 @@ from flask import Flask, jsonify, request
 from . import facts as F
 
 log = logging.getLogger("weather")
+FAULT_KEY = "chaos#sources"
+STAGES = {"zip_lookup", "nws_points", "nws_grid", "open_meteo"}
 ZIP_RE = re.compile(r"^[0-9]{5}$")   # ASCII digits only (\d would accept other scripts)
 
 
@@ -49,6 +51,21 @@ class FactsCache:
             return None, None
         return json.loads(item["facts"]), now - float(item["fetched_at"])
 
+    def faults(self, now: float) -> set[str]:
+        """Chaos testing (Section 11.2): sources the operator has switched off.
+
+        Item pk "chaos#sources" holds a list such as ["open_meteo"]. Only someone with
+        write access to this table (the operator, not the app or a visitor) can set it,
+        and it expires by itself through the table TTL.
+        """
+        try:
+            item = self.table.get_item(Key={"pk": FAULT_KEY}).get("Item")
+        except Exception:
+            return set()
+        if not item or int(item.get("expires_at", 0)) <= now:
+            return set()
+        return {str(x) for x in item.get("down", [])} & STAGES
+
     def put(self, key: str, doc: dict, now: float) -> None:
         try:
             self.table.put_item(Item={"pk": key, "facts": json.dumps(doc),
@@ -56,6 +73,28 @@ class FactsCache:
                                       "expires_at": int(now + self.keep_seconds)})
         except Exception:
             log_event("cache_error", op="put")
+
+
+class FaultySources:
+    """Wraps the real sources; a stage listed in `down` behaves like a timeout."""
+
+    def __init__(self, inner, down: set[str]):
+        self.inner, self.down = inner, down
+
+    def _call(self, stage, fn, *args):
+        return (0, None) if stage in self.down else fn(*args)
+
+    def zip_lookup(self, z):
+        return self._call("zip_lookup", self.inner.zip_lookup, z)
+
+    def nws_point(self, lat, lon):
+        return self._call("nws_points", self.inner.nws_point, lat, lon)
+
+    def nws_grid(self, url):
+        return self._call("nws_grid", self.inner.nws_grid, url)
+
+    def open_meteo(self, lat, lon):
+        return self._call("open_meteo", self.inner.open_meteo, lat, lon)
 
 
 def get_facts(zip_code: str, day: date, sources, cache: FactsCache, now_utc: datetime):
@@ -75,6 +114,7 @@ def get_facts(zip_code: str, day: date, sources, cache: FactsCache, now_utc: dat
         return 503, {"error": "weather_unavailable",
                      "message": "Weather data is unavailable right now. Please try again shortly."}
 
+    sources = FaultySources(sources, cache.faults(now))
     status, place_doc = sources.zip_lookup(zip_code)
     if status == 404:
         return 404, {"error": "zip_not_found", "message": "ZIP code not found."}
@@ -111,7 +151,10 @@ def get_facts(zip_code: str, day: date, sources, cache: FactsCache, now_utc: dat
         log_event("source_failed", stage="open_meteo", zip=zip_code)
 
     doc = F.build_facts(zip_code, place, props, grid_props, om, day, now_utc)
-    cache.put(key, doc, now)
+    degraded = grid_props is None or om is None
+    doc["degraded"] = degraded
+    if not degraded:          # a report missing a source is shown, but not kept for others
+        cache.put(key, doc, now)
     return 200, {**doc, "cache": "miss", "age_minutes": 0}
 
 

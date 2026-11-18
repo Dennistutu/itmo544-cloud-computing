@@ -9,6 +9,23 @@ OLD_ONLY = {"DB_INSTANCE_ID", "DB_INSTANCE_CLASS", "DB_ALLOCATED_STORAGE", "DB_P
             "DB_USER", "DB_SG_NAME", "DB_SUBNET_GROUP_NAME", "DB_PASSWORD_PARAM", "CACHE_SECONDS"}
 
 
+# Recommended values that changed after a live test. Updated only if you never edited them.
+CHANGED = {"REPORT_LIMIT": ("20", "60"), "RECOVERY_SLO_SECONDS": ("300", "180")}
+
+
+def refresh_defaults(path: Path, current: dict) -> list[str]:
+    """Replace KEY=old_default with KEY=new_default; leave values you chose yourself."""
+    lines, changed = path.read_text().splitlines(), []
+    for i, line in enumerate(lines):
+        key = line.split("=", 1)[0].strip()
+        if key in CHANGED and current.get(key) == CHANGED[key][0]:
+            lines[i] = f"{key}={CHANGED[key][1]}"
+            changed.append(f"{key} {CHANGED[key][0]} -> {CHANGED[key][1]}")
+    if changed:
+        path.write_text("\n".join(lines) + "\n")
+    return changed
+
+
 def main() -> None:
     env_path = Path(".env")
     current = load_dotenv(env_path)
@@ -20,6 +37,9 @@ def main() -> None:
             for key in added:
                 fh.write(f"{key}={example[key]}\n")
     print("Added:", ", ".join(added) if added else "nothing (already up to date)")
+    updated = refresh_defaults(env_path, current)
+    if updated:
+        print("Updated:", ", ".join(updated))
     unused = sorted(OLD_ONLY & current.keys())
     if unused:
         print("No longer used (safe to delete from .env):", ", ".join(unused))

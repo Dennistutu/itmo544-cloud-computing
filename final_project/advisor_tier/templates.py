@@ -25,7 +25,7 @@ FORM_HTML = """<!doctype html><html lang="en"><head><meta charset="utf-8">
   {% if errors.date %}<div class="err">{{ errors.date }}</div>{% endif %}
 
   <label for="zip">US ZIP code</label>
-  <input id="zip" name="zip" inputmode="numeric" maxlength="5" placeholder="60616" value="{{ values.zip }}" required>
+  <input id="zip" name="zip" inputmode="numeric" maxlength="10" placeholder="60616" value="{{ values.zip }}" required>
   {% if errors.zip %}<div class="err">{{ errors.zip }}</div>{% endif %}
 
   <label for="gender">Clothing style</label>

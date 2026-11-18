@@ -16,7 +16,7 @@ import requests
 from flask import Flask, render_template_string, request
 
 from . import advice as A
-from .emailer import report_text, send_report
+from .emailer import recipient_tag, report_text, send_report
 from .store import AdvisorStore, visitor_id
 from .templates import FORM_HTML, REPORT_HTML, STATUS_HTML
 from .validation import GENDER_CHOICES, clean_email, clothing_category, validate_form
@@ -200,7 +200,7 @@ def create_app(deps: Deps) -> Flask:
              "rows": build_rows(body), "advice": advice, "advice_source": advice_source,
              "data_age_minutes": body.get("age_minutes", 0),
              "stale": body.get("cache") == "stale"}
-        if not r["stale"]:
+        if not r["stale"] and not body.get("degraded"):
             deps.store.put_report(key, r)
         log_event("report", zip=clean["zip"], date=day, cache=body.get("cache"),
                   advice=("gemini" if advice_source.startswith("Google") else "fallback"),
@@ -216,11 +216,15 @@ def create_app(deps: Deps) -> Flask:
         if not email_addr or not REPORT_KEY_RE.fullmatch(key):
             return render_template_string(STATUS_HTML, status="failed",
                                           message="That request was not valid."), 400
-        if not deps.store.allow("email", visitor, s["EMAIL_LIMIT"], s["EMAIL_WINDOW_SECONDS"]):
+        # Two limits: per connection (many people may share one campus IP) and per
+        # recipient address (stops one inbox being flooded, whoever asks).
+        to_tag = recipient_tag(email_addr, s["VISITOR_SALT"])
+        if not (deps.store.allow("email", visitor, s["EMAIL_IP_LIMIT"], s["EMAIL_WINDOW_SECONDS"])
+                and deps.store.allow("email_to", to_tag, s["EMAIL_LIMIT"],
+                                     s["EMAIL_WINDOW_SECONDS"])):
             log_event("rate_limited", kind="email")
             return render_template_string(STATUS_HTML, status="failed",
-                                          message="Email limit reached for your connection. "
-                                                  "Please try again later."), 429
+                                          message="Email limit reached. Please try again later."), 429
         saved = deps.store.get_report(key)
         if saved is None:
             return render_template_string(STATUS_HTML, status="failed",
@@ -239,6 +243,7 @@ def create_app(deps: Deps) -> Flask:
 def settings_from_env(env) -> dict:
     """Typed settings from the environment the boot script writes from .env."""
     ints = ["GEMINI_DAILY_CAP", "REPORT_LIMIT", "REPORT_WINDOW_SECONDS", "EMAIL_LIMIT",
+            "EMAIL_IP_LIMIT",
             "EMAIL_WINDOW_SECONDS", "KEY_CACHE_SECONDS", "REPORT_SECONDS"]
     floats = ["WEATHER_TIMEOUT_SECONDS", "GEMINI_TIMEOUT_SECONDS"]
     strs = ["WEATHER_URL", "GEMINI_MODEL", "GEMINI_PARAM_NAME", "SNS_TOPIC_ARN", "VISITOR_SALT"]

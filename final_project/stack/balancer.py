@@ -12,6 +12,8 @@ from .util import error_code, ignore_errors, retry_on
 log = logging.getLogger("stack")
 
 # Tighter than the defaults (30 seconds, 5 checks) so recovery is not dominated by health checks.
+DEREGISTRATION_DELAY = 30
+
 HEALTH_CHECK = {
     "HealthCheckProtocol": "HTTP",
     "HealthCheckPath": "/",
@@ -36,11 +38,16 @@ def ensure_target_group(aws: AwsClients, settings: Settings, tier: Tier, vpc_id:
     arn = find_target_group(aws, tier.tg_name)
     if arn:
         log.info("Target group %s already exists, skipping.", tier.tg_name)
-        return arn
-    response = aws.elbv2.create_target_group(
-        Name=tier.tg_name, Protocol="HTTP", Port=settings.app_port, VpcId=vpc_id,
-        TargetType="instance", **{**HEALTH_CHECK, "HealthCheckPath": health_path})
-    return response["TargetGroups"][0]["TargetGroupArn"]
+    else:
+        arn = aws.elbv2.create_target_group(
+            Name=tier.tg_name, Protocol="HTTP", Port=settings.app_port, VpcId=vpc_id,
+            TargetType="instance", **{**HEALTH_CHECK, "HealthCheckPath": health_path},
+        )["TargetGroups"][0]["TargetGroupArn"]
+    # Found on the first deploy: the default 300 s deregistration delay made teardown and
+    # instance replacement wait five minutes. No request here runs longer than about 40 s.
+    aws.elbv2.modify_target_group_attributes(TargetGroupArn=arn, Attributes=[
+        {"Key": "deregistration_delay.timeout_seconds", "Value": str(DEREGISTRATION_DELAY)}])
+    return arn
 
 
 def find_load_balancer(aws: AwsClients, name: str) -> dict | None:

@@ -71,3 +71,18 @@ def delete_salt(aws: AwsClients, s: ProjectSettings) -> None:
     with ignore_errors("ParameterNotFound"):
         aws.ssm.delete_parameter(Name=s.salt_param_name)
         log.info("Deleted salt parameter")
+
+
+def gemini_counts(aws: AwsClients, table: str) -> dict[str, int]:
+    """{day: Gemini calls} from the advisor table's daily counters, read before teardown."""
+    out: dict[str, int] = {}
+    try:
+        pages = aws.dynamodb.get_paginator("scan").paginate(
+            TableName=table, FilterExpression="begins_with(pk, :p)",
+            ExpressionAttributeValues={":p": {"S": "gemini#"}})
+        for page in pages:
+            for item in page["Items"]:
+                out[item["pk"]["S"].split("#", 1)[1]] = int(item.get("count", {}).get("N", 0))
+    except aws.dynamodb.exceptions.ResourceNotFoundException:
+        pass
+    return out

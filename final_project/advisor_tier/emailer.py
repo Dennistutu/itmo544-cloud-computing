@@ -68,21 +68,24 @@ def send_report(sns, topic_arn: str, email: str, salt: str, subject: str, text: 
 
 
 def report_text(report: dict) -> str:
-    """The report as a plain-text table (SNS email is plain text only)."""
+    """The report as plain text (SNS email is plain text only).
+
+    Mail apps show plain text in a proportional font, so space-aligned columns fall
+    apart. Each item gets its own block with one line per period instead.
+    """
     facts = report["facts"]
     lines = [f"Weather Advisor report for {facts['place']}, {facts['state']} {facts['zip']}",
-             f"Date: {facts['date']} (local time, {facts['timezone']})", ""]
-    rows = report["rows"]
-    width = max(len(r["label"]) for r in rows) + 2
-    lines.append(f"{'':{width}}{'MORNING':<38}NIGHT")
-    for r in rows:
-        lines.append(f"{r['label']:<{width}}{r['morning'][:36]:<38}{r['night'][:36]}")
-    lines += ["", "Advice", "------"]
-    for period in ("morning", "night"):
-        adv = report["advice"][period]
-        lines.append(f"{period.title()}:")
-        lines += [f"  Roads: {adv['road']}", f"  Dressing: {adv['dressing']}",
-                  f"  Accessories: {adv['accessories']}"]
-    lines += ["", f"Advice source: {report['advice_source']}",
+             f"Date: {facts['date']} (local time, {facts['timezone']})",
+             "Morning = 06:00-11:59, Night = 18:00-23:59", ""]
+    for r in report["rows"]:
+        lines += [r["label"].upper(),
+                  f"  Morning: {r['morning']}  [{r['morning_src']}]",
+                  f"  Night:   {r['night']}  [{r['night_src']}]", ""]
+    for key, label in (("road", "SUGGESTED ROAD CONDITIONS"), ("dressing", "SUGGESTED DRESSING"),
+                       ("accessories", "SUGGESTED ACCESSORIES")):
+        lines += [label,
+                  f"  Morning: {report['advice']['morning'][key]}",
+                  f"  Night:   {report['advice']['night'][key]}", ""]
+    lines += [f"Advice source: {report['advice_source']}",
               "Weather data: National Weather Service; Open-Meteo.com (CC BY 4.0)."]
     return "\n".join(lines)

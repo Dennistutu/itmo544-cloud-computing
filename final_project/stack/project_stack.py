@@ -98,6 +98,7 @@ def advisor_env(s: ProjectSettings, alb_dns: str, topic_arn: str) -> dict:
             "SALT_PARAM_NAME": s.salt_param_name, "SNS_TOPIC_ARN": topic_arn,
             "GEMINI_DAILY_CAP": s.gemini_daily_cap, "REPORT_LIMIT": s.report_limit,
             "REPORT_WINDOW_SECONDS": s.report_window_seconds, "EMAIL_LIMIT": s.email_limit,
+            "EMAIL_IP_LIMIT": s.email_ip_limit,
             "EMAIL_WINDOW_SECONDS": s.email_window_seconds,
             "KEY_CACHE_SECONDS": s.key_cache_seconds, "REPORT_SECONDS": s.report_seconds,
             "WEATHER_TIMEOUT_SECONDS": s.weather_timeout_seconds,
@@ -193,8 +194,10 @@ def create_stack(s: ProjectSettings, aws: AwsClients, iam_wait: int = 15,
                         advisor_table_arn=advisor_arn, created_at=clock())
 
 
-def delete_stack(s: ProjectSettings, aws: AwsClients, sleep=time.sleep) -> None:
-    """Everything except the Gemini key, in reverse order. Safe to run twice."""
+def delete_stack(s: ProjectSettings, aws: AwsClients, sleep=time.sleep) -> dict[str, int]:
+    """Everything except the Gemini key, in reverse order. Safe to run twice.
+    Returns the Gemini calls per day, read before the advisor table is deleted."""
+    gemini = data_stores.gemini_counts(aws, s.advisor_table)
     log.info("== Auto Scaling Groups (terminates the instances) ==")
     for tier in s.tiers:
         scaling.delete_asg(aws, tier.asg_name, sleep=sleep)
@@ -225,3 +228,4 @@ def delete_stack(s: ProjectSettings, aws: AwsClients, sleep=time.sleep) -> None:
 
     StackOutputs.remove()
     log.info("Stack removed. Only the Gemini key parameter was kept.")
+    return gemini
